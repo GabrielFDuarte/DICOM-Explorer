@@ -1,0 +1,265 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>DICOM Explorer</title>
+    <link href="styles/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/cornerstone.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header">
+        <h1>DICOM Explorer</h1>
+        <p class="lead">
+            Clique em "Escolher arquivo 1" e selecione um arquivo DICOM P10 do seu sistema ou arraste e solte este arquivo. 
+            <br>Logo em seguida repita o mesmo processo para o "Escolher arquivo 2".
+            <br>Assim poderá comparar as tags existentes entre os dois arquivos enviados.
+            <button id="toggleCollapseInfo" class="btn btn-primary" type="button">
+                Mais Informação
+            </button>
+        </p>
+    </div>
+    <div id="collapseInfo" class="collapse" style="display:none;">
+        <p>
+            Esta página usa a biblioteca cornerstoneWADOImageLoader para ler dois arquivos DICOM P10 SOP instance do seu sistema
+            e comparar as tags DICOM existentes entre os dois arquivos.
+            Nem todas as sintaxes de transferência são suportadas, clique 
+            <a href="https://github.com/cornerstonejs/cornerstoneWADOImageLoader/blob/master/docs/TransferSyntaxes.md">
+                aqui
+            </a> para uma lista completa do suporte.
+        </p>
+        <P>
+            NOTA: Se o arquivo DICOM P10 for do tipo multiframe, apenas o primeiro frame será exibido.  Acesso aos
+            outros frames são possíveis adicionando o parâmetro <i>frame</i> para especificar qual frame
+            exibir a partir de um objeto multiframe (padrões para o primeiro frame caso não esteja especificado). <code>?frame=2</code>
+        </P>
+        <P>
+            NOTA: Medidas de segurança do navegador previnem o javascript de ler diretamente o sistema de arquivos - arquivos devem ser
+            escolhidos manualmente pelo usuário via o elemento de inclusão de arquivos como exibido nesta página ou via segurar e soltar.
+        </P>
+        <br>
+        <br>
+        <strong>Uso desta página precisa de IE10+ ou qualquer outro navegador moderno.</strong>
+        <hr>
+    </div>
+    <div id="loadProgress">Progresso de carga da imagem 1:</div>
+
+    <div class="row">
+        <form id="form" class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-3">
+                    <input type="file" id="selectFile" >
+                </div>
+            </div>
+        </form>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-4">
+            <div style="width:256px;height:256px;position:relative;color: white;display:inline-block;border-style:solid;border-color:black;"
+                 oncontextmenu="return false"
+                 class='disable-selection noIbar'
+                 unselectable='on'
+                 onselectstart='return false;'
+                 onmousedown='return false;'>
+                <div id="dicomImage"
+                     style="width:256px;height:256px;top:0px;left:0px; position:absolute">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <span>Samples Per Pixel: </span><span id="samplesPerPixel"></span><br>
+            <span>Photometric Interpretation: </span><span id="photometricInterpretation"></span><br>
+            <span>Number Of Frames: </span><span id="numberOfFrames"></span><br>
+            <span>Planar Configuration: </span><span id="planarConfiguration"></span><br>
+            <span>Rows: </span><span id="rows"></span><br>
+            <span>Columns: </span><span id="columns"></span><br>
+            <span>Pixel Spacing: </span><span id="pixelSpacing"></span><br>
+            <span>Bits Allocated: </span><span id="bitsAllocated"></span><br>
+            <span>Bits Stored: </span><span id="bitsStored"></span><br>
+            <span>High Bit: </span><span id="highBit"></span><br>
+            <span>Pixel Representation: </span><span id="pixelRepresentation"></span><br>
+            <span>WindowCenter: </span><span id="windowCenter"></span><br>
+            <span>WindowWidth: </span><span id="windowWidth"></span><br>
+            <span>RescaleIntercept: </span><span id="rescaleIntercept"></span><br>
+            <span>RescaleSlope: </span><span id="rescaleSlope"></span><br>
+            <span>Basic Offset Table Entries: </span><span id="basicOffsetTable"></span><br>
+            <span>Fragments: </span><span id="fragments"></span><br>
+            <span>Min Stored Pixel Value: </span><span id="minStoredPixelValue"></span><br>
+            <span>Max Stored Pixel Value: </span><span id="maxStoredPixelValue"></span><br>
+            <br>
+            <span title="(0002,0000)"><b>File Meta Information Group Length: </b></span><span id="x00020000"></span><br>
+            <span title="(0002,0001)"><b>File Meta Information Version: </b></span><span id="x00020001"></span><br>
+            <span title="(0002,0002)"><b>Media Storage SOP Class UID: </b></span><span id="x00020002"></span><br>
+            <span title="(0002,0003)"><b>* Media Storage SOP Instance UID: </b></span><span id="x00020003"></span><br>
+            <span title="(0002,0010)"><b>Transfer Syntax UID: </b></span><span id="x00020010"></span><br>
+            <span title="(0002,0012)"><b>Implementation Class UID: </b></span><span id="x00020012"></span><br>
+            <span title="(0002,0013)"><b>Implementation Version Name: </b></span><span id="x00020013"></span><br>
+            <span title="(0002,0016)"><b>Source Application Entity Title: </b></span><span id="x00020016"></span><br>
+            <span title="(0008,0005)"><b>Specific Character Set: </b></span><span id="x00080005"></span><br>
+            <span title="(0008,0008)"><b>Image Type: </b></span><span id="x00080008"></span><br>
+            <span title="(0008,0016)"><b>SOP Class UID: </b></span><span id="x00080016"></span><br>
+            <span title="(0008,0018)"><b>* SOP Instance UID: </b></span><span id="x00080018"></span><br>
+            <span title="(0008,0020)"><b>Study Date: </b></span><span id="x00080020"></span><br>
+            <span title="(0008,0021)"><b>Series Date: </b></span><span id="x00080021"></span><br>
+            <span title="(0008,0022)"><b>Acquisition Date: </b></span><span id="x00080022"></span><br>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="libs/cornerstone.min.js"></script>
+<script src="libs/cornerstoneMath.min.js"></script>
+<script src="libs/cornerstoneTools.min.js"></script>
+
+<script src="libs/dicomParser.min.js"></script>
+<script src="libs/cornerstoneWADOImageLoader.min.js"></script>
+
+<script src="libs/uids.js"></script>
+
+<!-- Lines ONLY required for this example to run without building the project -->
+<!--<script>window.cornerstoneWADOImageLoader || document.write('<script src="https://unpkg.com/cornerstone-wado-image-loader">\x3C/script>')</script>-->
+<script src="libs/initializeWebWorkers.js"></script>
+
+<script>
+    cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+
+    // this function gets called once the user drops the file onto the div
+    function handleFileSelect(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        // Get the FileList object that contains the list of files that were dropped
+        const files = evt.dataTransfer.files;
+
+        // this UI is only built for a single file so just dump the first one
+        file = files[0];
+        const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+        loadAndViewImage(imageId);
+    }
+
+    function handleDragOver(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    }
+
+    // Setup the dnd listeners.
+    const dropZone = document.getElementById('dicomImage');
+    dropZone.addEventListener('dragover', handleDragOver, false);
+    dropZone.addEventListener('drop', handleFileSelect, false);
+
+
+    cornerstoneWADOImageLoader.configure({
+        beforeSend: function(xhr) {
+            // Add custom headers here (e.g. auth tokens)
+            //xhr.setRequestHeader('x-auth-token', 'my auth token');
+        },
+        useWebWorkers: true,
+    });
+
+    let loaded = false;
+
+    function loadAndViewImage(imageId) {
+        const element = document.getElementById('dicomImage');
+        cornerstone.loadImage(imageId).then(function(image) {
+            console.log(image);
+            const viewport = cornerstone.getDefaultViewportForImage(element, image);
+            cornerstone.displayImage(element, image, viewport);
+            if(loaded === false) {
+                loaded = true;
+            }
+
+            function formatData(data) {
+                return data.substring(0, 4) + "-" + data.substring(4, 6) + "-" + data.substring(6);
+            }
+
+            function getPixelRepresentation() {
+                const value = image.data.uint16('x00280103');
+                if(value === undefined) {
+                    return;
+                }
+                return value + (value === 0 ? ' (unsigned)' : ' (signed)');
+            }
+
+            function getPlanarConfiguration() {
+                const value = image.data.uint16('x00280006');
+                if(value === undefined) {
+                    return;
+                }
+                return value + (value === 0 ? ' (pixel)' : ' (plane)');
+            }
+
+            document.getElementById('samplesPerPixel').textContent = image.data.uint16('x00280002');
+            document.getElementById('photometricInterpretation').textContent = image.data.string('x00280004');
+            document.getElementById('numberOfFrames').textContent = image.data.string('x00280008');
+            document.getElementById('planarConfiguration').textContent = getPlanarConfiguration();
+            document.getElementById('rows').textContent = image.data.uint16('x00280010');
+            document.getElementById('columns').textContent = image.data.uint16('x00280011');
+            document.getElementById('pixelSpacing').textContent = image.data.string('x00280030');
+            document.getElementById('bitsAllocated').textContent = image.data.uint16('x00280100');
+            document.getElementById('bitsStored').textContent = image.data.uint16('x00280101');
+            document.getElementById('highBit').textContent = image.data.uint16('x00280102');
+            document.getElementById('pixelRepresentation').textContent = getPixelRepresentation();
+            document.getElementById('windowCenter').textContent = image.data.string('x00281050');
+            document.getElementById('windowWidth').textContent = image.data.string('x00281051');
+            document.getElementById('rescaleIntercept').textContent = image.data.string('x00281052');
+            document.getElementById('rescaleSlope').textContent = image.data.string('x00281053');
+            document.getElementById('basicOffsetTable').textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.basicOffsetTable ? image.data.elements.x7fe00010.basicOffsetTable.length : '';
+            document.getElementById('fragments').textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.fragments ? image.data.elements.x7fe00010.fragments.length : '';
+            document.getElementById('minStoredPixelValue').textContent = image.minPixelValue;
+            document.getElementById('maxStoredPixelValue').textContent = image.maxPixelValue;
+
+            document.getElementById('x00020000').textContent = image.data.uint16('x00020000');
+            document.getElementById('x00020001').textContent = image.data.uint16('x00020001');
+            let temp1 = image.data.string('x00020002');
+            document.getElementById('x00020002').textContent = temp1 + ' [' + uids[temp1] + ']';
+            document.getElementById('x00020003').textContent = image.data.string('x00020003');
+            let temp2 = image.data.string('x00020010');
+            document.getElementById('x00020010').textContent = temp2 + ' [' + uids[temp2] + ']';
+            document.getElementById('x00020012').textContent = image.data.string('x00020012');
+            document.getElementById('x00020013').textContent = image.data.string('x00020013');
+            document.getElementById('x00020016').textContent = image.data.string('x00020016');
+            document.getElementById('x00080005').textContent = image.data.string('x00080005');
+            document.getElementById('x00080008').textContent = image.data.string('x00080008');
+            let temp3 = image.data.string('x00080016');
+            document.getElementById('x00080016').textContent = temp3 + ' [' + uids[temp3] + ']';
+            document.getElementById('x00080018').textContent = image.data.string('x00080018');
+            document.getElementById('x00080020').textContent = formatData(image.data.string('x00080020'));
+            document.getElementById('x00080021').textContent = formatData(image.data.string('x00080021'));
+            document.getElementById('x00080022').textContent = formatData(image.data.string('x00080022'));
+
+            console.log('uint16: ' + image.data.uint16('x00080021'));
+            console.log('string: ' + image.data.string('x00080021'));
+
+        }, function(err) {
+            alert(err);
+        });
+    }
+
+    cornerstone.events.addEventListener('cornerstoneimageloadprogress', function(event) {
+        const eventData = event.detail;
+        const loadProgress = document.getElementById('loadProgress');
+        loadProgress.textContent = `Image Load Progress: ${eventData.percentComplete}%`;
+    });
+
+    const element = document.getElementById('dicomImage');
+    cornerstone.enable(element);
+
+    document.getElementById('selectFile').addEventListener('change', function(e) {
+        // Add the file to the cornerstoneFileImageLoader and get unique
+        // number for that file
+        const file = e.target.files[0];
+        const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+        loadAndViewImage(imageId);
+    });
+
+    document.getElementById('toggleCollapseInfo').addEventListener('click', function() {
+        if (document.getElementById('collapseInfo').style.display === 'none') {
+            document.getElementById('collapseInfo').style.display = 'block';
+        } else {
+            document.getElementById('collapseInfo').style.display = 'none';
+        }
+    });
+</script>
+</html>
