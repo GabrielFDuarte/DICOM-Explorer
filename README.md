@@ -8,7 +8,7 @@ I hope it is a way to make it easier for developers, students and anyone who nee
 
 ## Examples
 
-A functional example of the application can be seen [here](https://rawcdn.githack.com/GabrielFDuarte/DICOM-Explorer/a178219d2fcca1b0f6e96f57af5b4172db30414d/index.html).
+A functional example of the application can be seen [here](https://rawcdn.githack.com/GabrielFDuarte/DICOM-Explorer/b049b605b1826b7980e609e09fdf90aec2dbed59/index.html).
 
 ## Built With
 
