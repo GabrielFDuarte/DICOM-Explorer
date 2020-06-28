@@ -1,3 +1,7 @@
+<div align="center">
+<img src="images/DicomExplorerLogo.png" alt="DICOM Explorer" width="400px">
+</div>
+
 # DICOM Explorer
 Web system for identification and analysis of header tags from DICOM files and comparison of tags between files of the type.
 I hope it is a way to make it easier for developers, students and anyone who needs to access and compare quickly information of this type directly in browsers.
@@ -12,7 +16,7 @@ A functional example of the application can be seen [here](https://rawcdn.githac
 
 ## Versioning
 
-Currently, the system is at version 0.1.0. For the versions available, see the [tags on this repository](https://github.com/GabrielFDuarte/DICOM-Explorer/tags). 
+Currently, the system is at version 1.0.0. For the versions available, see the [tags on this repository](https://github.com/GabrielFDuarte/DICOM-Explorer/tags). 
 
 ## Authors
 

@@ -1,769 +1,829 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="DICOM header tags viewer and comparer" />
+    <meta name="author" content="Gabriel Duarte" />
     <title>DICOM Explorer</title>
-    <link href="styles/bootstrap.min.css" rel="stylesheet">
-    <link href="styles/cornerstone.min.css" rel="stylesheet">
+    <link rel="icon" href="images/DicomExplorerIcon.png">
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet"
+        crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+        crossorigin="anonymous"></script>
 </head>
 
-<body>
-    <div class="container">
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand"><img src="images/DicomExplorerLogo.png" alt="DICOM Explorer" style="width: 190px;"></a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i
+                class="fas fa-bars"></i></button>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Imagem 1</div>
 
-        <div class="page-header" style="height: 17vh;">
-            <h1>DICOM Explorer</h1>
-            <p class="lead">
-                Clique em "Escolher arquivo 1" e selecione um arquivo DICOM P10 do seu sistema ou arraste e solte este
-                arquivo.
-                <br>Logo em seguida repita o mesmo processo para o "Escolher arquivo 2".
-                <br>Assim poderá comparar as tags existentes entre os dois arquivos enviados.
-            </p>
+                        <form style="margin-left: 15px;margin-right: 15px;">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="selectFile1">
+                                <label class="custom-file-label" for="customFile">DICOM 1</label>
+                            </div>
+                        </form>
+                        <span
+                            style="margin-left: 15px;margin-right: 15px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+                            id="dicomName1"></span>
+
+                        <div style="margin-left: 15px;margin-right: 15px;margin-top: 15px;margin-bottom:15px;
+                        width:195px;height:195px;position:relative;color: white;display:inline-block;border-style:solid;border-color:rgba(255,255,255,0.25);"
+                            oncontextmenu="return false" class='disable-selection noIbar' unselectable='on'
+                            onselectstart='return false;' onmousedown='return false;'>
+                            <div id="dicomImage1" style="width:189px;height:189px;top:0px;left:0px; position:absolute">
+                            </div>
+                        </div>
+
+                        <div class="sb-sidenav-menu-heading">Imagem 2</div>
+
+                        <form style="margin-left: 15px;margin-right: 15px;">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="selectFile2">
+                                <label class="custom-file-label" for="customFile">DICOM 2</label>
+                            </div>
+                        </form>
+                        <span
+                            style="margin-left: 15px;margin-right: 15px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+                            id="dicomName2"></span>
+
+                        <div style="margin-left: 15px;margin-right: 15px;margin-top: 15px;margin-bottom:15px;
+                        width:195px;height:195px;position:relative;color: white;display:inline-block;border-style:solid;border-color:rgba(255,255,255,0.25);"
+                            oncontextmenu="return false" class='disable-selection noIbar' unselectable='on'
+                            onselectstart='return false;' onmousedown='return false;'>
+                            <div id="dicomImage2" style="width:189px;height:189px;top:0px;left:0px; position:absolute">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Developed by:</div>
+                    <a href="https://github.com/GabrielFDuarte" target="_blank">Gabriel Duarte</a>
+                </div>
+            </nav>
         </div>
-        <div class="row">
-            <div class="col-md-3">
-                <div class="row">
-                    <div><b>Imagem 1</b></div>
-                    <form id="form" class="form-horizontal">
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                <input type="file" id="selectFile1">
-                            </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid" style="margin-top: 1.5rem!important;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table mr-1"></i>
+                            Header Tag Comparator
                         </div>
-                    </form>
-                    <div style="width:262px;height:262px;position:relative;color: white;display:inline-block;border-style:solid;border-color:black;"
-                        oncontextmenu="return false" class='disable-selection noIbar' unselectable='on'
-                        onselectstart='return false;' onmousedown='return false;'>
-                        <div id="dicomImage1" style="width:256px;height:256px;top:0px;left:0px; position:absolute">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <hr>
-                </div>
-                <div class="row">
-                    <div><b>Imagem 2</b></div>
-                    <form id="form" class="form-horizontal">
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                <input type="file" id="selectFile2">
-                            </div>
-                        </div>
-                    </form>
-                    <div style="width:262px;height:262px;position:relative;color: white;display:inline-block;border-style:solid;border-color:black;"
-                        oncontextmenu="return false" class='disable-selection noIbar' unselectable='on'
-                        onselectstart='return false;' onmousedown='return false;'>
-                        <div id="dicomImage2" style="width:256px;height:256px;top:0px;left:0px; position:absolute">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div id="areaTable" style="height: 77vh; overflow-y: auto;">
-                    <table class="table table-striped table-hover">
-                        <thead style="background: darkgray;">
-                            <tr>
-                                <th style="text-align: center;">Tags</th>
-                                <th style="text-align: center;">Valores Img. 1</th>
-                                <th style="text-align: center;">Valores Img. 2</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="basicOffsetTable">
-                                <td><b>Basic Offset Table Entries: </b></td>
-                                <td><span id="basicOffsetTable1"></span></td>
-                                <td><span id="basicOffsetTable2"></span></td>
-                            </tr>
-                            <tr id="fragments">
-                                <td><b>Fragments: </b></td>
-                                <td><span id="fragments1"></span></td>
-                                <td><span id="fragments2"></span></td>
-                            </tr>
-                            <tr id="minStoredPixelValue">
-                                <td><b>Min Stored Pixel Value: </b></td>
-                                <td><span id="minStoredPixelValue1"></span></td>
-                                <td><span id="minStoredPixelValue2"></span></td>
-                            </tr>
-                            <tr id="maxStoredPixelValue">
-                                <td><b>Max Stored Pixel Value: </b></td>
-                                <td><span id="maxStoredPixelValue1"></span></td>
-                                <td><span id="maxStoredPixelValue2"></span></td>
-                            </tr>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Tags</th>
+                                            <th>Valores Img. 1</th>
+                                            <th>Valores Img. 2</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Tags</th>
+                                            <th>Valores Img. 1</th>
+                                            <th>Valores Img. 2</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <tr id="basicOffsetTable">
+                                            <td><b>Basic Offset Table Entries: </b></td>
+                                            <td><span id="basicOffsetTable1"></span></td>
+                                            <td><span id="basicOffsetTable2"></span></td>
+                                        </tr>
+                                        <tr id="fragments">
+                                            <td><b>Fragments: </b></td>
+                                            <td><span id="fragments1"></span></td>
+                                            <td><span id="fragments2"></span></td>
+                                        </tr>
+                                        <tr id="minStoredPixelValue">
+                                            <td><b>Min Stored Pixel Value: </b></td>
+                                            <td><span id="minStoredPixelValue1"></span></td>
+                                            <td><span id="minStoredPixelValue2"></span></td>
+                                        </tr>
+                                        <tr id="maxStoredPixelValue">
+                                            <td><b>Max Stored Pixel Value: </b></td>
+                                            <td><span id="maxStoredPixelValue1"></span></td>
+                                            <td><span id="maxStoredPixelValue2"></span></td>
+                                        </tr>
 
-                            <tr id="x00020000">
-                                <td title="(0002,0000)"><b>File Meta Information Group Length: </b></td>
-                                <td><span id="x000200001"></span></span></td>
-                                <td><span id="x000200002"></span></span></td>
-                            </tr>
-                            <tr id="x00020001">
-                                <td title="(0002,0001)"><b>File Meta Information Version: </b></td>
-                                <td><span id="x000200011"></span></td>
-                                <td><span id="x000200012"></span></td>
-                            </tr>
-                            <tr id="x00020002">
-                                <td title="(0002,0002)"><b>Media Storage SOP Class UID: </b></td>
-                                <td><span id="x000200021"></span></td>
-                                <td><span id="x000200022"></span></td>
-                            </tr>
-                            <tr id="x00020003">
-                                <td title="(0002,0003)"><b>Media Storage SOP Instance UID: </b></td>
-                                <td><span id="x000200031"></span></td>
-                                <td><span id="x000200032"></span></td>
-                            </tr>
-                            <tr id="x00020010">
-                                <td title="(0002,0010)"><b>Transfer Syntax UID: </b></td>
-                                <td><span id="x000200101"></span></td>
-                                <td><span id="x000200102"></span></td>
-                            </tr>
-                            <tr id="x00020012">
-                                <td title="(0002,0012)"><b>Implementation Class UID: </b></td>
-                                <td><span id="x000200121"></span></td>
-                                <td><span id="x000200122"></span></td>
-                            </tr>
-                            <tr id="x00020013">
-                                <td title="(0002,0013)"><b>Implementation Version Name: </b></td>
-                                <td><span id="x000200131"></span></td>
-                                <td><span id="x000200132"></span></td>
-                            </tr>
-                            <tr id="x00020016">
-                                <td title="(0002,0016)"><b>Source Application Entity Title: </b></td>
-                                <td><span id="x000200161"></span></td>
-                                <td><span id="x000200162"></span></td>
-                            </tr>
-                            <tr id="x00080005">
-                                <td title="(0008,0005)"><b>Specific Character Set: </b></td>
-                                <td><span id="x000800051"></span></td>
-                                <td><span id="x000800052"></span></td>
-                            </tr>
-                            <tr id="x00080008">
-                                <td title="(0008,0008)"><b>Image Type: </b></td>
-                                <td><span id="x000800081"></span></td>
-                                <td><span id="x000800082"></span></td>
-                            </tr>
-                            <tr id="x00080016">
-                                <td title="(0008,0016)"><b>SOP Class UID: </b></td>
-                                <td><span id="x000800161"></span></td>
-                                <td><span id="x000800162"></span></td>
-                            </tr>
-                            <tr id="x00080018">
-                                <td title="(0008,0018)"><b>SOP Instance UID: </b></td>
-                                <td><span id="x000800181"></span></td>
-                                <td><span id="x000800182"></span></td>
-                            </tr>
-                            <tr id="x00080020">
-                                <td title="(0008,0020)"><b>Study Date: </b></td>
-                                <td><span id="x000800201"></span></td>
-                                <td><span id="x000800202"></span></td>
-                            </tr>
-                            <tr id="x00080021">
-                                <td title="(0008,0021)"><b>Series Date: </b></td>
-                                <td><span id="x000800211"></span></td>
-                                <td><span id="x000800212"></span></td>
-                            </tr>
-                            <tr id="x00080022">
-                                <td title="(0008,0022)"><b>Acquisition Date: </b></td>
-                                <td><span id="x000800221"></span></td>
-                                <td><span id="x000800222"></span></td>
-                            </tr>
-                            <tr id="x00080023">
-                                <td title="(0008,0023)"><b>Content Date: </b></td>
-                                <td><span id="x000800231"></span></td>
-                                <td><span id="x000800232"></span></td>
-                            </tr>
-                            <tr id="x00080030">
-                                <td title="(0008,0030)"><b>Study Time: </b></td>
-                                <td><span id="x000800301"></span></td>
-                                <td><span id="x000800302"></span></td>
-                            </tr>
-                            <tr id="x00080031">
-                                <td title="(0008,0031)"><b>Series Time: </b></td>
-                                <td><span id="x000800311"></span></td>
-                                <td><span id="x000800312"></span></td>
-                            </tr>
-                            <tr id="x00080032">
-                                <td title="(0008,0032)"><b>Acquisition Time: </b></td>
-                                <td><span id="x000800321"></span></td>
-                                <td><span id="x000800322"></span></td>
-                            </tr>
-                            <tr id="x00080033">
-                                <td title="(0008,0033)"><b>Content Time: </b></td>
-                                <td><span id="x000800331"></span></td>
-                                <td><span id="x000800332"></span></td>
-                            </tr>
-                            <tr id="x00080050">
-                                <td title="(0008,0050)"><b>Accession Number: </b></td>
-                                <td><span id="x000800501"></span></td>
-                                <td><span id="x000800502"></span></td>
-                            </tr>
-                            <tr id="x00080060">
-                                <td title="(0008,0060)"><b>Modality: </b></td>
-                                <td><span id="x000800601"></span></td>
-                                <td><span id="x000800602"></span></td>
-                            </tr>
-                            <tr id="x00080070">
-                                <td title="(0008,0070)"><b>Manufacturer: </b></td>
-                                <td><span id="x000800701"></span></td>
-                                <td><span id="x000800702"></span></td>
-                            </tr>
-                            <tr id="x00080080">
-                                <td title="(0008,0080)"><b>Institution Name: </b></td>
-                                <td><span id="x000800801"></span></td>
-                                <td><span id="x000800802"></span></td>
-                            </tr>
-                            <tr id="x00080081">
-                                <td title="(0008,0081)"><b>Institution Address: </b></td>
-                                <td><span id="x000800811"></span></td>
-                                <td><span id="x000800812"></span></td>
-                            </tr>
-                            <tr id="x00080090">
-                                <td title="(0008,0090)"><b>Referring Physician's Name: </b></td>
-                                <td><span id="x000800901"></span></td>
-                                <td><span id="x000800902"></span></td>
-                            </tr>
-                            <tr id="x00081010">
-                                <td title="(0008,1010)"><b>Station Name: </b></td>
-                                <td><span id="x000810101"></span></td>
-                                <td><span id="x000810102"></span></td>
-                            </tr>
-                            <tr id="x00081030">
-                                <td title="(0008,1030)"><b>Study Description:: </b></td>
-                                <td><span id="x000810301"></span></td>
-                                <td><span id="x000810302"></span></td>
-                            </tr>
-                            <tr id="x0008103E">
-                                <td title="(0008,103E)"><b>Series Description: </b></td>
-                                <td><span id="x0008103E1"></span></td>
-                                <td><span id="x0008103E2"></span></td>
-                            </tr>
-                            <tr id="x00081070">
-                                <td title="(0008,1070)"><b>Operators' Name: </b></td>
-                                <td><span id="x000810701"></span></td>
-                                <td><span id="x000810702"></span></td>
-                            </tr>
-                            <tr id="x00081090">
-                                <td title="(0008,1090)"><b>Manufacturer's Model Name: </b></td>
-                                <td><span id="x000810901"></span></td>
-                                <td><span id="x000810902"></span></td>
-                            </tr>
-                            <tr id="x00081140">
-                                <td title="(0008,1140)"><b>Referenced Image Sequence: </b></td>
-                                <td><span id="x000811401"></span></td>
-                                <td><span id="x000811402"></span></td>
-                            </tr>
-                            <tr id="x00081150">
-                                <td title="(0008,1150)"><b>_Referenced SOP Class UID: </b></td>
-                                <td><span id="x000811501"></span></td>
-                                <td><span id="x000811502"></span></td>
-                            </tr>
-                            <tr id="x00081155">
-                                <td title="(0008,1155)"><b>_Referenced SOP Instance UID: </b></td>
-                                <td><span id="x000811551"></span></td>
-                                <td><span id="x000811552"></span></td>
-                            </tr>
-                            <tr id="x00082111">
-                                <td title="(0008,2111)"><b>Derivation Description: </b></td>
-                                <td><span id="x000821111"></span></td>
-                                <td><span id="x000821112"></span></td>
-                            </tr>
-                            <tr id="x00089215">
-                                <td title="(0008,9215)"><b>Derivation Code Sequence: </b></td>
-                                <td><span id="x000892151"></span></td>
-                                <td><span id="x000892152"></span></td>
-                            </tr>
-                            <tr id="x00080100">
-                                <td title="(0008,0100)"><b>_Code Value: </b></td>
-                                <td><span id="x000801001"></span></td>
-                                <td><span id="x000801002"></span></td>
-                            </tr>
-                            <tr id="x00080102">
-                                <td title="(0008,0102)"><b>_Coding Scheme Designator: </b></td>
-                                <td><span id="x000801021"></span></td>
-                                <td><span id="x000801022"></span></td>
-                            </tr>
-                            <tr id="x00080104">
-                                <td title="(0008,0104)"><b>_Code Meaning: </b></td>
-                                <td><span id="x000801041"></span></td>
-                                <td><span id="x000801042"></span></td>
-                            </tr>
-                            <tr id="x00100010">
-                                <td title="(0010,0010)"><b>Patient's Name: </b></td>
-                                <td><span id="x001000101"></span></td>
-                                <td><span id="x001000102"></span></td>
-                            </tr>
-                            <tr id="x00100020">
-                                <td title="(0010,0020)"><b>Patient ID: </b></td>
-                                <td><span id="x001000201"></span></td>
-                                <td><span id="x001000202"></span></td>
-                            </tr>
-                            <tr id="x00100030">
-                                <td title="(0010,0030)"><b>Patient's Birth Date: </b></td>
-                                <td><span id="x001000301"></span></td>
-                                <td><span id="x001000302"></span></td>
-                            </tr>
-                            <tr id="x00100040">
-                                <td title="(0010,0040)"><b>Patient's Sex: </b></td>
-                                <td><span id="x001000401"></span></td>
-                                <td><span id="x001000402"></span></td>
-                            </tr>
-                            <tr id="x00101010">
-                                <td title="(0010,1010)"><b>Patient's Age: </b></td>
-                                <td><span id="x001010101"></span></td>
-                                <td><span id="x001010102"></span></td>
-                            </tr>
-                            <tr id="x00180015">
-                                <td title="(0018,0015)"><b>Body Part Examined: </b></td>
-                                <td><span id="x001800151"></span></td>
-                                <td><span id="x001800152"></span></td>
-                            </tr>
-                            <tr id="x00180050">
-                                <td title="(0018,0050)"><b>Slice Thickness: </b></td>
-                                <td><span id="x001800501"></span></td>
-                                <td><span id="x001800502"></span></td>
-                            </tr>
-                            <tr id="x00180060">
-                                <td title="(0018,0060)"><b>KVP: </b></td>
-                                <td><span id="x001800601"></span></td>
-                                <td><span id="x001800602"></span></td>
-                            </tr>
-                            <tr id="x00181000">
-                                <td title="(0018,1000)"><b>Device Serial Number: </b></td>
-                                <td><span id="x001810001"></span></td>
-                                <td><span id="x001810002"></span></td>
-                            </tr>
-                            <tr id="x00181020">
-                                <td title="(0018,1020)"><b>Software Version(s): </b></td>
-                                <td><span id="x001810201"></span></td>
-                                <td><span id="x001810202"></span></td>
-                            </tr>
-                            <tr id="x00181030">
-                                <td title="(0018,1030)"><b>Protocol Name: </b></td>
-                                <td><span id="x001810301"></span></td>
-                                <td><span id="x001810302"></span></td>
-                            </tr>
-                            <tr id="x00181110">
-                                <td title="(0018,1110)"><b>Distance Source to Detector: </b></td>
-                                <td><span id="x001811101"></span></td>
-                                <td><span id="x001811102"></span></td>
-                            </tr>
-                            <tr id="x00181111">
-                                <td title="(0018,1111)"><b>Distance Source to Patient: </b></td>
-                                <td><span id="x001811111"></span></td>
-                                <td><span id="x001811112"></span></td>
-                            </tr>
-                            <tr id="x00181120">
-                                <td title="(0018,1120)"><b>Gantry/Detector Tilt: </b></td>
-                                <td><span id="x001811201"></span></td>
-                                <td><span id="x001811202"></span></td>
-                            </tr>
-                            <tr id="x00181130">
-                                <td title="(0018,1130)"><b>Table Height: </b></td>
-                                <td><span id="x001811301"></span></td>
-                                <td><span id="x001811302"></span></td>
-                            </tr>
-                            <tr id="x00181140">
-                                <td title="(0018,1140)"><b>Rotation Direction: </b></td>
-                                <td><span id="x001811401"></span></td>
-                                <td><span id="x001811402"></span></td>
-                            </tr>
-                            <tr id="x00181160">
-                                <td title="(0018,1160)"><b>Filter Type: </b></td>
-                                <td><span id="x001811601"></span></td>
-                                <td><span id="x001811602"></span></td>
-                            </tr>
-                            <tr id="x00181170">
-                                <td title="(0018,1170)"><b>Generator Power: </b></td>
-                                <td><span id="x001811701"></span></td>
-                                <td><span id="x001811702"></span></td>
-                            </tr>
-                            <tr id="x00181190">
-                                <td title="(0018,1190)"><b>Focal Spot(s): </b></td>
-                                <td><span id="x001811901"></span></td>
-                                <td><span id="x001811902"></span></td>
-                            </tr>
-                            <tr id="x00181200">
-                                <td title="(0018,1200)"><b>Date of Last Calibration: </b></td>
-                                <td><span id="x001812001"></span></td>
-                                <td><span id="x001812002"></span></td>
-                            </tr>
-                            <tr id="x00181201">
-                                <td title="(0018,1201)"><b>Time of Last Calibration: </b></td>
-                                <td><span id="x001812011"></span></td>
-                                <td><span id="x001812012"></span></td>
-                            </tr>
-                            <tr id="x00181210">
-                                <td title="(0018,1210)"><b>Convolution Kernel: </b></td>
-                                <td><span id="x001812101"></span></td>
-                                <td><span id="x001812102"></span></td>
-                            </tr>
-                            <tr id="x00185100">
-                                <td title="(0018,5100)"><b>Patient Position: </b></td>
-                                <td><span id="x001851001"></span></td>
-                                <td><span id="x001851002"></span></td>
-                            </tr>
-                            <tr id="x0020000D">
-                                <td title="(0020,000D)"><b>Study Instance UID: </b></td>
-                                <td><span id="x0020000D1"></span></td>
-                                <td><span id="x0020000D2"></span></td>
-                            </tr>
-                            <tr id="x0020000E">
-                                <td title="(0020,000E)"><b>Series Instance UID: </b></td>
-                                <td><span id="x0020000E1"></span></td>
-                                <td><span id="x0020000E2"></span></td>
-                            </tr>
-                            <tr id="x00200010">
-                                <td title="(0020,0010)"><b>Study ID: </b></td>
-                                <td><span id="x002000101"></span></td>
-                                <td><span id="x002000102"></span></td>
-                            </tr>
-                            <tr id="x00200011">
-                                <td title="(0020,0011)"><b>Series Number: </b></td>
-                                <td><span id="x002000111"></span></td>
-                                <td><span id="x002000112"></span></td>
-                            </tr>
-                            <tr id="x00200012">
-                                <td title="(0020,0012)"><b>Acquisition Number: </b></td>
-                                <td><span id="x002000121"></span></td>
-                                <td><span id="x002000122"></span></td>
-                            </tr>
-                            <tr id="x00200013">
-                                <td title="(0020,0013)"><b>Instance Number: </b></td>
-                                <td><span id="x002000131"></span></td>
-                                <td><span id="x002000132"></span></td>
-                            </tr>
-                            <tr id="x00200032">
-                                <td title="(0020,0032)"><b>Image Position (Patient): </b></td>
-                                <td><span id="x002000321"></span></td>
-                                <td><span id="x002000322"></span></td>
-                            </tr>
-                            <tr id="x00200037">
-                                <td title="(0020,0037)"><b>Image Orientation (Patient): </b></td>
-                                <td><span id="x002000371"></span></td>
-                                <td><span id="x002000372"></span></td>
-                            </tr>
-                            <tr id="x00200052">
-                                <td title="(0020,0052)"><b>Frame of Reference UID: </b></td>
-                                <td><span id="x002000521"></span></td>
-                                <td><span id="x002000522"></span></td>
-                            </tr>
-                            <tr id="x00201040">
-                                <td title="(0020,1040)"><b>Position Reference Indicator: </b></td>
-                                <td><span id="x002010401"></span></td>
-                                <td><span id="x002010402"></span></td>
-                            </tr>
-                            <tr id="x00204000">
-                                <td title="(0020,4000)"><b>Image Comments: </b></td>
-                                <td><span id="x002040001"></span></td>
-                                <td><span id="x002040002"></span></td>
-                            </tr>
-                            <tr id="x00280002">
-                                <td title="(0028,0002)"><b>Samples per Pixel: </b></td>
-                                <td><span id="x002800021"></span></td>
-                                <td><span id="x002800022"></span></td>
-                            </tr>
-                            <tr id="x00280004">
-                                <td title="(0028,0004)"><b>Photometric Interpretation: </b></td>
-                                <td><span id="x002800041"></span></td>
-                                <td><span id="x002800042"></span></td>
-                            </tr>
-                            <tr id="x00280006">
-                                <td title="(0028,0006)"><b>Planar Configuration: </b></td>
-                                <td><span id="x002800061"></span></td>
-                                <td><span id="x002800062"></span></td>
-                            </tr>
-                            <tr id="x00280008">
-                                <td title="(0028,0008)"><b>Number Of Frames: </b></td>
-                                <td><span id="x002800081"></span></td>
-                                <td><span id="x002800082"></span></td>
-                            </tr>
-                            <tr id="x00280010">
-                                <td title="(0028,0010)"><b>Rows: </b></td>
-                                <td><span id="x002800101"></span></td>
-                                <td><span id="x002800102"></span></td>
-                            </tr>
-                            <tr id="x00280011">
-                                <td title="(0028,0011)"><b>Columns: </b></td>
-                                <td><span id="x002800111"></span></td>
-                                <td><span id="x002800112"></span></td>
-                            </tr>
-                            <tr id="x00280030">
-                                <td title="(0028,0030)"><b>Pixel Spacing: </b></td>
-                                <td><span id="x002800301"></span></td>
-                                <td><span id="x002800302"></span></td>
-                            </tr>
-                            <tr id="x00280100">
-                                <td title="(0028,0100)"><b>Bits Allocated: </b></td>
-                                <td><span id="x002801001"></span></td>
-                                <td><span id="x002801002"></span></td>
-                            </tr>
-                            <tr id="x00280101">
-                                <td title="(0028,0101)"><b>Bits Stored: </b></td>
-                                <td><span id="x002801011"></span></td>
-                                <td><span id="x002801012"></span></td>
-                            </tr>
-                            <tr id="x00280102">
-                                <td title="(0028,0102)"><b>High Bit: </b></td>
-                                <td><span id="x002801021"></span></td>
-                                <td><span id="x002801022"></span></td>
-                            </tr>
-                            <tr id="x00280103">
-                                <td title="(0028,0103)"><b>Pixel Representation: </b></td>
-                                <td><span id="x002801031"></span></td>
-                                <td><span id="x002801032"></span></td>
-                            </tr>
-                            <tr id="x00281050">
-                                <td title="(0028,1050)"><b>Window Center: </b></td>
-                                <td><span id="x002810501"></span></td>
-                                <td><span id="x002810502"></span></td>
-                            </tr>
-                            <tr id="x00281051">
-                                <td title="(0028,1051)"><b>Window Width: </b></td>
-                                <td><span id="x002810511"></span></td>
-                                <td><span id="x002810512"></span></td>
-                            </tr>
-                            <tr id="x00281052">
-                                <td title="(0028,1052)"><b>Rescale Intercept: </b></td>
-                                <td><span id="x002810521"></span></td>
-                                <td><span id="x002810522"></span></td>
-                            </tr>
-                            <tr id="x00281053">
-                                <td title="(0028,1053)"><b>Rescale Slope: </b></td>
-                                <td><span id="x002810531"></span></td>
-                                <td><span id="x002810532"></span></td>
-                            </tr>
-                            <tr id="x00281054">
-                                <td title="(0028,1054)"><b>Rescale Type: </b></td>
-                                <td><span id="x002810541"></span></td>
-                                <td><span id="x002810542"></span></td>
-                            </tr>
-                            <tr id="x00281055">
-                                <td title="(0028,1055)"><b>Window Center & Width Explanation: </b></td>
-                                <td><span id="x002810551"></span></td>
-                                <td><span id="x002810552"></span></td>
-                            </tr>
-                            <tr id="x00282110">
-                                <td title="(0028,2110)"><b>Lossy Image Compression: </b></td>
-                                <td><span id="x002821101"></span></td>
-                                <td><span id="x002821102"></span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        <tr id="x00020000">
+                                            <td title="(0002,0000)"><b>File Meta Information Group Length: </b></td>
+                                            <td><span id="x000200001"></span></span></td>
+                                            <td><span id="x000200002"></span></span></td>
+                                        </tr>
+                                        <tr id="x00020001">
+                                            <td title="(0002,0001)"><b>File Meta Information Version: </b></td>
+                                            <td><span id="x000200011"></span></td>
+                                            <td><span id="x000200012"></span></td>
+                                        </tr>
+                                        <tr id="x00020002">
+                                            <td title="(0002,0002)"><b>Media Storage SOP Class UID: </b></td>
+                                            <td><span id="x000200021"></span></td>
+                                            <td><span id="x000200022"></span></td>
+                                        </tr>
+                                        <tr id="x00020003">
+                                            <td title="(0002,0003)"><b>Media Storage SOP Instance UID: </b></td>
+                                            <td><span id="x000200031"></span></td>
+                                            <td><span id="x000200032"></span></td>
+                                        </tr>
+                                        <tr id="x00020010">
+                                            <td title="(0002,0010)"><b>Transfer Syntax UID: </b></td>
+                                            <td><span id="x000200101"></span></td>
+                                            <td><span id="x000200102"></span></td>
+                                        </tr>
+                                        <tr id="x00020012">
+                                            <td title="(0002,0012)"><b>Implementation Class UID: </b></td>
+                                            <td><span id="x000200121"></span></td>
+                                            <td><span id="x000200122"></span></td>
+                                        </tr>
+                                        <tr id="x00020013">
+                                            <td title="(0002,0013)"><b>Implementation Version Name: </b></td>
+                                            <td><span id="x000200131"></span></td>
+                                            <td><span id="x000200132"></span></td>
+                                        </tr>
+                                        <tr id="x00020016">
+                                            <td title="(0002,0016)"><b>Source Application Entity Title: </b></td>
+                                            <td><span id="x000200161"></span></td>
+                                            <td><span id="x000200162"></span></td>
+                                        </tr>
+                                        <tr id="x00080005">
+                                            <td title="(0008,0005)"><b>Specific Character Set: </b></td>
+                                            <td><span id="x000800051"></span></td>
+                                            <td><span id="x000800052"></span></td>
+                                        </tr>
+                                        <tr id="x00080008">
+                                            <td title="(0008,0008)"><b>Image Type: </b></td>
+                                            <td><span id="x000800081"></span></td>
+                                            <td><span id="x000800082"></span></td>
+                                        </tr>
+                                        <tr id="x00080016">
+                                            <td title="(0008,0016)"><b>SOP Class UID: </b></td>
+                                            <td><span id="x000800161"></span></td>
+                                            <td><span id="x000800162"></span></td>
+                                        </tr>
+                                        <tr id="x00080018">
+                                            <td title="(0008,0018)"><b>SOP Instance UID: </b></td>
+                                            <td><span id="x000800181"></span></td>
+                                            <td><span id="x000800182"></span></td>
+                                        </tr>
+                                        <tr id="x00080020">
+                                            <td title="(0008,0020)"><b>Study Date: </b></td>
+                                            <td><span id="x000800201"></span></td>
+                                            <td><span id="x000800202"></span></td>
+                                        </tr>
+                                        <tr id="x00080021">
+                                            <td title="(0008,0021)"><b>Series Date: </b></td>
+                                            <td><span id="x000800211"></span></td>
+                                            <td><span id="x000800212"></span></td>
+                                        </tr>
+                                        <tr id="x00080022">
+                                            <td title="(0008,0022)"><b>Acquisition Date: </b></td>
+                                            <td><span id="x000800221"></span></td>
+                                            <td><span id="x000800222"></span></td>
+                                        </tr>
+                                        <tr id="x00080023">
+                                            <td title="(0008,0023)"><b>Content Date: </b></td>
+                                            <td><span id="x000800231"></span></td>
+                                            <td><span id="x000800232"></span></td>
+                                        </tr>
+                                        <tr id="x00080030">
+                                            <td title="(0008,0030)"><b>Study Time: </b></td>
+                                            <td><span id="x000800301"></span></td>
+                                            <td><span id="x000800302"></span></td>
+                                        </tr>
+                                        <tr id="x00080031">
+                                            <td title="(0008,0031)"><b>Series Time: </b></td>
+                                            <td><span id="x000800311"></span></td>
+                                            <td><span id="x000800312"></span></td>
+                                        </tr>
+                                        <tr id="x00080032">
+                                            <td title="(0008,0032)"><b>Acquisition Time: </b></td>
+                                            <td><span id="x000800321"></span></td>
+                                            <td><span id="x000800322"></span></td>
+                                        </tr>
+                                        <tr id="x00080033">
+                                            <td title="(0008,0033)"><b>Content Time: </b></td>
+                                            <td><span id="x000800331"></span></td>
+                                            <td><span id="x000800332"></span></td>
+                                        </tr>
+                                        <tr id="x00080050">
+                                            <td title="(0008,0050)"><b>Accession Number: </b></td>
+                                            <td><span id="x000800501"></span></td>
+                                            <td><span id="x000800502"></span></td>
+                                        </tr>
+                                        <tr id="x00080060">
+                                            <td title="(0008,0060)"><b>Modality: </b></td>
+                                            <td><span id="x000800601"></span></td>
+                                            <td><span id="x000800602"></span></td>
+                                        </tr>
+                                        <tr id="x00080070">
+                                            <td title="(0008,0070)"><b>Manufacturer: </b></td>
+                                            <td><span id="x000800701"></span></td>
+                                            <td><span id="x000800702"></span></td>
+                                        </tr>
+                                        <tr id="x00080080">
+                                            <td title="(0008,0080)"><b>Institution Name: </b></td>
+                                            <td><span id="x000800801"></span></td>
+                                            <td><span id="x000800802"></span></td>
+                                        </tr>
+                                        <tr id="x00080081">
+                                            <td title="(0008,0081)"><b>Institution Address: </b></td>
+                                            <td><span id="x000800811"></span></td>
+                                            <td><span id="x000800812"></span></td>
+                                        </tr>
+                                        <tr id="x00080090">
+                                            <td title="(0008,0090)"><b>Referring Physician's Name: </b></td>
+                                            <td><span id="x000800901"></span></td>
+                                            <td><span id="x000800902"></span></td>
+                                        </tr>
+                                        <tr id="x00081010">
+                                            <td title="(0008,1010)"><b>Station Name: </b></td>
+                                            <td><span id="x000810101"></span></td>
+                                            <td><span id="x000810102"></span></td>
+                                        </tr>
+                                        <tr id="x00081030">
+                                            <td title="(0008,1030)"><b>Study Description:: </b></td>
+                                            <td><span id="x000810301"></span></td>
+                                            <td><span id="x000810302"></span></td>
+                                        </tr>
+                                        <tr id="x0008103E">
+                                            <td title="(0008,103E)"><b>Series Description: </b></td>
+                                            <td><span id="x0008103E1"></span></td>
+                                            <td><span id="x0008103E2"></span></td>
+                                        </tr>
+                                        <tr id="x00081070">
+                                            <td title="(0008,1070)"><b>Operators' Name: </b></td>
+                                            <td><span id="x000810701"></span></td>
+                                            <td><span id="x000810702"></span></td>
+                                        </tr>
+                                        <tr id="x00081090">
+                                            <td title="(0008,1090)"><b>Manufacturer's Model Name: </b></td>
+                                            <td><span id="x000810901"></span></td>
+                                            <td><span id="x000810902"></span></td>
+                                        </tr>
+                                        <tr id="x00081140">
+                                            <td title="(0008,1140)"><b>Referenced Image Sequence: </b></td>
+                                            <td><span id="x000811401"></span></td>
+                                            <td><span id="x000811402"></span></td>
+                                        </tr>
+                                        <tr id="x00081150">
+                                            <td title="(0008,1150)"><b>_Referenced SOP Class UID: </b></td>
+                                            <td><span id="x000811501"></span></td>
+                                            <td><span id="x000811502"></span></td>
+                                        </tr>
+                                        <tr id="x00081155">
+                                            <td title="(0008,1155)"><b>_Referenced SOP Instance UID: </b></td>
+                                            <td><span id="x000811551"></span></td>
+                                            <td><span id="x000811552"></span></td>
+                                        </tr>
+                                        <tr id="x00082111">
+                                            <td title="(0008,2111)"><b>Derivation Description: </b></td>
+                                            <td><span id="x000821111"></span></td>
+                                            <td><span id="x000821112"></span></td>
+                                        </tr>
+                                        <tr id="x00089215">
+                                            <td title="(0008,9215)"><b>Derivation Code Sequence: </b></td>
+                                            <td><span id="x000892151"></span></td>
+                                            <td><span id="x000892152"></span></td>
+                                        </tr>
+                                        <tr id="x00080100">
+                                            <td title="(0008,0100)"><b>_Code Value: </b></td>
+                                            <td><span id="x000801001"></span></td>
+                                            <td><span id="x000801002"></span></td>
+                                        </tr>
+                                        <tr id="x00080102">
+                                            <td title="(0008,0102)"><b>_Coding Scheme Designator: </b></td>
+                                            <td><span id="x000801021"></span></td>
+                                            <td><span id="x000801022"></span></td>
+                                        </tr>
+                                        <tr id="x00080104">
+                                            <td title="(0008,0104)"><b>_Code Meaning: </b></td>
+                                            <td><span id="x000801041"></span></td>
+                                            <td><span id="x000801042"></span></td>
+                                        </tr>
+                                        <tr id="x00100010">
+                                            <td title="(0010,0010)"><b>Patient's Name: </b></td>
+                                            <td><span id="x001000101"></span></td>
+                                            <td><span id="x001000102"></span></td>
+                                        </tr>
+                                        <tr id="x00100020">
+                                            <td title="(0010,0020)"><b>Patient ID: </b></td>
+                                            <td><span id="x001000201"></span></td>
+                                            <td><span id="x001000202"></span></td>
+                                        </tr>
+                                        <tr id="x00100030">
+                                            <td title="(0010,0030)"><b>Patient's Birth Date: </b></td>
+                                            <td><span id="x001000301"></span></td>
+                                            <td><span id="x001000302"></span></td>
+                                        </tr>
+                                        <tr id="x00100040">
+                                            <td title="(0010,0040)"><b>Patient's Sex: </b></td>
+                                            <td><span id="x001000401"></span></td>
+                                            <td><span id="x001000402"></span></td>
+                                        </tr>
+                                        <tr id="x00101010">
+                                            <td title="(0010,1010)"><b>Patient's Age: </b></td>
+                                            <td><span id="x001010101"></span></td>
+                                            <td><span id="x001010102"></span></td>
+                                        </tr>
+                                        <tr id="x00180015">
+                                            <td title="(0018,0015)"><b>Body Part Examined: </b></td>
+                                            <td><span id="x001800151"></span></td>
+                                            <td><span id="x001800152"></span></td>
+                                        </tr>
+                                        <tr id="x00180050">
+                                            <td title="(0018,0050)"><b>Slice Thickness: </b></td>
+                                            <td><span id="x001800501"></span></td>
+                                            <td><span id="x001800502"></span></td>
+                                        </tr>
+                                        <tr id="x00180060">
+                                            <td title="(0018,0060)"><b>KVP: </b></td>
+                                            <td><span id="x001800601"></span></td>
+                                            <td><span id="x001800602"></span></td>
+                                        </tr>
+                                        <tr id="x00181000">
+                                            <td title="(0018,1000)"><b>Device Serial Number: </b></td>
+                                            <td><span id="x001810001"></span></td>
+                                            <td><span id="x001810002"></span></td>
+                                        </tr>
+                                        <tr id="x00181020">
+                                            <td title="(0018,1020)"><b>Software Version(s): </b></td>
+                                            <td><span id="x001810201"></span></td>
+                                            <td><span id="x001810202"></span></td>
+                                        </tr>
+                                        <tr id="x00181030">
+                                            <td title="(0018,1030)"><b>Protocol Name: </b></td>
+                                            <td><span id="x001810301"></span></td>
+                                            <td><span id="x001810302"></span></td>
+                                        </tr>
+                                        <tr id="x00181110">
+                                            <td title="(0018,1110)"><b>Distance Source to Detector: </b></td>
+                                            <td><span id="x001811101"></span></td>
+                                            <td><span id="x001811102"></span></td>
+                                        </tr>
+                                        <tr id="x00181111">
+                                            <td title="(0018,1111)"><b>Distance Source to Patient: </b></td>
+                                            <td><span id="x001811111"></span></td>
+                                            <td><span id="x001811112"></span></td>
+                                        </tr>
+                                        <tr id="x00181120">
+                                            <td title="(0018,1120)"><b>Gantry/Detector Tilt: </b></td>
+                                            <td><span id="x001811201"></span></td>
+                                            <td><span id="x001811202"></span></td>
+                                        </tr>
+                                        <tr id="x00181130">
+                                            <td title="(0018,1130)"><b>Table Height: </b></td>
+                                            <td><span id="x001811301"></span></td>
+                                            <td><span id="x001811302"></span></td>
+                                        </tr>
+                                        <tr id="x00181140">
+                                            <td title="(0018,1140)"><b>Rotation Direction: </b></td>
+                                            <td><span id="x001811401"></span></td>
+                                            <td><span id="x001811402"></span></td>
+                                        </tr>
+                                        <tr id="x00181160">
+                                            <td title="(0018,1160)"><b>Filter Type: </b></td>
+                                            <td><span id="x001811601"></span></td>
+                                            <td><span id="x001811602"></span></td>
+                                        </tr>
+                                        <tr id="x00181170">
+                                            <td title="(0018,1170)"><b>Generator Power: </b></td>
+                                            <td><span id="x001811701"></span></td>
+                                            <td><span id="x001811702"></span></td>
+                                        </tr>
+                                        <tr id="x00181190">
+                                            <td title="(0018,1190)"><b>Focal Spot(s): </b></td>
+                                            <td><span id="x001811901"></span></td>
+                                            <td><span id="x001811902"></span></td>
+                                        </tr>
+                                        <tr id="x00181200">
+                                            <td title="(0018,1200)"><b>Date of Last Calibration: </b></td>
+                                            <td><span id="x001812001"></span></td>
+                                            <td><span id="x001812002"></span></td>
+                                        </tr>
+                                        <tr id="x00181201">
+                                            <td title="(0018,1201)"><b>Time of Last Calibration: </b></td>
+                                            <td><span id="x001812011"></span></td>
+                                            <td><span id="x001812012"></span></td>
+                                        </tr>
+                                        <tr id="x00181210">
+                                            <td title="(0018,1210)"><b>Convolution Kernel: </b></td>
+                                            <td><span id="x001812101"></span></td>
+                                            <td><span id="x001812102"></span></td>
+                                        </tr>
+                                        <tr id="x00185100">
+                                            <td title="(0018,5100)"><b>Patient Position: </b></td>
+                                            <td><span id="x001851001"></span></td>
+                                            <td><span id="x001851002"></span></td>
+                                        </tr>
+                                        <tr id="x0020000D">
+                                            <td title="(0020,000D)"><b>Study Instance UID: </b></td>
+                                            <td><span id="x0020000D1"></span></td>
+                                            <td><span id="x0020000D2"></span></td>
+                                        </tr>
+                                        <tr id="x0020000E">
+                                            <td title="(0020,000E)"><b>Series Instance UID: </b></td>
+                                            <td><span id="x0020000E1"></span></td>
+                                            <td><span id="x0020000E2"></span></td>
+                                        </tr>
+                                        <tr id="x00200010">
+                                            <td title="(0020,0010)"><b>Study ID: </b></td>
+                                            <td><span id="x002000101"></span></td>
+                                            <td><span id="x002000102"></span></td>
+                                        </tr>
+                                        <tr id="x00200011">
+                                            <td title="(0020,0011)"><b>Series Number: </b></td>
+                                            <td><span id="x002000111"></span></td>
+                                            <td><span id="x002000112"></span></td>
+                                        </tr>
+                                        <tr id="x00200012">
+                                            <td title="(0020,0012)"><b>Acquisition Number: </b></td>
+                                            <td><span id="x002000121"></span></td>
+                                            <td><span id="x002000122"></span></td>
+                                        </tr>
+                                        <tr id="x00200013">
+                                            <td title="(0020,0013)"><b>Instance Number: </b></td>
+                                            <td><span id="x002000131"></span></td>
+                                            <td><span id="x002000132"></span></td>
+                                        </tr>
+                                        <tr id="x00200032">
+                                            <td title="(0020,0032)"><b>Image Position (Patient): </b></td>
+                                            <td><span id="x002000321"></span></td>
+                                            <td><span id="x002000322"></span></td>
+                                        </tr>
+                                        <tr id="x00200037">
+                                            <td title="(0020,0037)"><b>Image Orientation (Patient): </b></td>
+                                            <td><span id="x002000371"></span></td>
+                                            <td><span id="x002000372"></span></td>
+                                        </tr>
+                                        <tr id="x00200052">
+                                            <td title="(0020,0052)"><b>Frame of Reference UID: </b></td>
+                                            <td><span id="x002000521"></span></td>
+                                            <td><span id="x002000522"></span></td>
+                                        </tr>
+                                        <tr id="x00201040">
+                                            <td title="(0020,1040)"><b>Position Reference Indicator: </b></td>
+                                            <td><span id="x002010401"></span></td>
+                                            <td><span id="x002010402"></span></td>
+                                        </tr>
+                                        <tr id="x00204000">
+                                            <td title="(0020,4000)"><b>Image Comments: </b></td>
+                                            <td><span id="x002040001"></span></td>
+                                            <td><span id="x002040002"></span></td>
+                                        </tr>
+                                        <tr id="x00280002">
+                                            <td title="(0028,0002)"><b>Samples per Pixel: </b></td>
+                                            <td><span id="x002800021"></span></td>
+                                            <td><span id="x002800022"></span></td>
+                                        </tr>
+                                        <tr id="x00280004">
+                                            <td title="(0028,0004)"><b>Photometric Interpretation: </b></td>
+                                            <td><span id="x002800041"></span></td>
+                                            <td><span id="x002800042"></span></td>
+                                        </tr>
+                                        <tr id="x00280006">
+                                            <td title="(0028,0006)"><b>Planar Configuration: </b></td>
+                                            <td><span id="x002800061"></span></td>
+                                            <td><span id="x002800062"></span></td>
+                                        </tr>
+                                        <tr id="x00280008">
+                                            <td title="(0028,0008)"><b>Number Of Frames: </b></td>
+                                            <td><span id="x002800081"></span></td>
+                                            <td><span id="x002800082"></span></td>
+                                        </tr>
+                                        <tr id="x00280010">
+                                            <td title="(0028,0010)"><b>Rows: </b></td>
+                                            <td><span id="x002800101"></span></td>
+                                            <td><span id="x002800102"></span></td>
+                                        </tr>
+                                        <tr id="x00280011">
+                                            <td title="(0028,0011)"><b>Columns: </b></td>
+                                            <td><span id="x002800111"></span></td>
+                                            <td><span id="x002800112"></span></td>
+                                        </tr>
+                                        <tr id="x00280030">
+                                            <td title="(0028,0030)"><b>Pixel Spacing: </b></td>
+                                            <td><span id="x002800301"></span></td>
+                                            <td><span id="x002800302"></span></td>
+                                        </tr>
+                                        <tr id="x00280100">
+                                            <td title="(0028,0100)"><b>Bits Allocated: </b></td>
+                                            <td><span id="x002801001"></span></td>
+                                            <td><span id="x002801002"></span></td>
+                                        </tr>
+                                        <tr id="x00280101">
+                                            <td title="(0028,0101)"><b>Bits Stored: </b></td>
+                                            <td><span id="x002801011"></span></td>
+                                            <td><span id="x002801012"></span></td>
+                                        </tr>
+                                        <tr id="x00280102">
+                                            <td title="(0028,0102)"><b>High Bit: </b></td>
+                                            <td><span id="x002801021"></span></td>
+                                            <td><span id="x002801022"></span></td>
+                                        </tr>
+                                        <tr id="x00280103">
+                                            <td title="(0028,0103)"><b>Pixel Representation: </b></td>
+                                            <td><span id="x002801031"></span></td>
+                                            <td><span id="x002801032"></span></td>
+                                        </tr>
+                                        <tr id="x00281050">
+                                            <td title="(0028,1050)"><b>Window Center: </b></td>
+                                            <td><span id="x002810501"></span></td>
+                                            <td><span id="x002810502"></span></td>
+                                        </tr>
+                                        <tr id="x00281051">
+                                            <td title="(0028,1051)"><b>Window Width: </b></td>
+                                            <td><span id="x002810511"></span></td>
+                                            <td><span id="x002810512"></span></td>
+                                        </tr>
+                                        <tr id="x00281052">
+                                            <td title="(0028,1052)"><b>Rescale Intercept: </b></td>
+                                            <td><span id="x002810521"></span></td>
+                                            <td><span id="x002810522"></span></td>
+                                        </tr>
+                                        <tr id="x00281053">
+                                            <td title="(0028,1053)"><b>Rescale Slope: </b></td>
+                                            <td><span id="x002810531"></span></td>
+                                            <td><span id="x002810532"></span></td>
+                                        </tr>
+                                        <tr id="x00281054">
+                                            <td title="(0028,1054)"><b>Rescale Type: </b></td>
+                                            <td><span id="x002810541"></span></td>
+                                            <td><span id="x002810542"></span></td>
+                                        </tr>
+                                        <tr id="x00281055">
+                                            <td title="(0028,1055)"><b>Window Center & Width Explanation: </b></td>
+                                            <td><span id="x002810551"></span></td>
+                                            <td><span id="x002810552"></span></td>
+                                        </tr>
+                                        <tr id="x00282110">
+                                            <td title="(0028,2110)"><b>Lossy Image Compression: </b></td>
+                                            <td><span id="x002821101"></span></td>
+                                            <td><span id="x002821102"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; DICOM Explorer 2020</div>
+                        <div>
+                            v1.0.0
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     </div>
-</body>
+    <script src="libs/cornerstone.min.js"></script>
+    <script src="libs/cornerstoneMath.min.js"></script>
+    <script src="libs/cornerstoneTools.min.js"></script>
+    <script src="libs/dicomParser.min.js"></script>
+    <script src="libs/cornerstoneWADOImageLoader.min.js"></script>
+    <script src="libs/uids.js"></script>
+    <script src="libs/initializeWebWorkers.js"></script>
 
-<script src="libs/cornerstone.min.js"></script>
-<script src="libs/cornerstoneMath.min.js"></script>
-<script src="libs/cornerstoneTools.min.js"></script>
-<script src="libs/dicomParser.min.js"></script>
-<script src="libs/cornerstoneWADOImageLoader.min.js"></script>
-<script src="libs/uids.js"></script>
-<script src="libs/initializeWebWorkers.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="assets/demo/datatables-demo.js"></script>
 
-<script>
-    cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+    <script>
+        cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 
-    // this function gets called once the user drops the file onto the div
-    function handleFileSelect(evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
+        // this function gets called once the user drops the file onto the div
+        function handleFileSelect(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
 
-        // Get the FileList object that contains the list of files that were dropped
-        const files = evt.dataTransfer.files;
+            // Get the FileList object that contains the list of files that were dropped
+            const files = evt.dataTransfer.files;
 
-        // this UI is only built for a single file so just dump the first one
-        file = files[0];
-        const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-        loadAndViewImage(imageId);
-    }
-
-    function handleDragOver(evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    }
-
-    // Setup the dnd listeners.
-    const dropZone1 = document.getElementById('dicomImage1');
-    dropZone1.addEventListener('dragover', handleDragOver, false);
-    dropZone1.addEventListener('drop', handleFileSelect, false);
-
-    cornerstoneWADOImageLoader.configure({
-        beforeSend: function (xhr) {
-            // Add custom headers here (e.g. auth tokens)
-            //xhr.setRequestHeader('x-auth-token', 'my auth token');
-        },
-        useWebWorkers: true,
-    });
-
-    let loaded = false;
-
-    function loadAndViewImage(imageId, flagField) {
-        var element;
-        var imgNum;
-        if (flagField) {
-            imgNum = 1;
-            element = document.getElementById('dicomImage1');
-        } else {
-            imgNum = 2;
-            element = document.getElementById('dicomImage2');
+            // this UI is only built for a single file so just dump the first one
+            file = files[0];
+            const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+            loadAndViewImage(imageId);
         }
-        //const element = document.getElementById('dicomImage');
-        cornerstone.loadImage(imageId).then(function (image) {
-            console.log('IMAGEM');
-            console.log(image);
-            const viewport = cornerstone.getDefaultViewportForImage(element, image);
-            cornerstone.displayImage(element, image, viewport);
-            if (loaded === false) {
-                loaded = true;
-            }
 
-            function formatData(data) {
-                return data.substring(0, 4) + "-" + data.substring(4, 6) + "-" + data.substring(6);
-            }
+        function handleDragOver(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }
 
-            function readTagString(image, tag) {
-                let tagValue = image.data.string(tag);
-                if (tagValue === undefined) {
-                    return '(VAZIO)';
-                } else {
-                    return tagValue;
-                }
-            }
+        // Setup the dnd listeners.
+        const dropZone1 = document.getElementById('dicomImage1');
+        dropZone1.addEventListener('dragover', handleDragOver, false);
+        dropZone1.addEventListener('drop', handleFileSelect, false);
 
-            function readTagStringID(image, tag) {
-                let tagValue = image.data.string(tag);
-                if (tagValue === undefined) {
-                    return '(VAZIO)';
-                } else {
-                    return tagValue + ' [' + uids[tagValue] + ']';
-                }
-            }
-
-            function readTagUint16(image, tag) {
-                let tagValue = image.data.uint16(tag);
-                if (tagValue === undefined) {
-                    return '(VAZIO)';
-                } else {
-                    return tagValue;
-                }
-            }
-
-            //PADRAO
-            document.getElementById('basicOffsetTable' + imgNum).textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.basicOffsetTable ? image.data.elements.x7fe00010.basicOffsetTable.length : '';
-            document.getElementById('fragments' + imgNum).textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.fragments ? image.data.elements.x7fe00010.fragments.length : '';
-            document.getElementById('minStoredPixelValue' + imgNum).textContent = image.minPixelValue;
-            document.getElementById('maxStoredPixelValue' + imgNum).textContent = image.maxPixelValue;
-            //NORMAL
-            document.getElementById('x00020000' + imgNum).textContent = readTagUint16(image, 'x00020000');
-            document.getElementById('x00020001' + imgNum).textContent = readTagUint16(image, 'x00020001');
-            document.getElementById('x00020002' + imgNum).textContent = readTagStringID(image, 'x00020002');
-            document.getElementById('x00020003' + imgNum).textContent = readTagString(image, 'x00020003');
-            document.getElementById('x00020010' + imgNum).textContent = readTagStringID(image, 'x00020010');
-            document.getElementById('x00020012' + imgNum).textContent = readTagString(image, 'x00020012');
-            document.getElementById('x00020013' + imgNum).textContent = readTagString(image, 'x00020013');
-            document.getElementById('x00020016' + imgNum).textContent = readTagString(image, 'x00020016');
-            document.getElementById('x00080005' + imgNum).textContent = readTagString(image, 'x00080005');
-            document.getElementById('x00080008' + imgNum).textContent = readTagString(image, 'x00080008');
-            document.getElementById('x00080016' + imgNum).textContent = readTagStringID(image, 'x00080016');
-            document.getElementById('x00080018' + imgNum).textContent = readTagString(image, 'x00080018');
-            document.getElementById('x00080020' + imgNum).textContent = readTagString(image, 'x00080020') + ' [' + formatData(readTagString(image, 'x00080020')) + ']';
-            document.getElementById('x00080021' + imgNum).textContent = readTagString(image, 'x00080021') + ' [' + formatData(readTagString(image, 'x00080021')) + ']';
-            document.getElementById('x00080022' + imgNum).textContent = readTagString(image, 'x00080022') + ' [' + formatData(readTagString(image, 'x00080022')) + ']';
-            document.getElementById('x00080023' + imgNum).textContent = readTagString(image, 'x00080023') + ' [' + formatData(readTagString(image, 'x00080023')) + ']';
-            document.getElementById('x00080030' + imgNum).textContent = readTagString(image, 'x00080030');
-            document.getElementById('x00080031' + imgNum).textContent = readTagString(image, 'x00080031');
-            document.getElementById('x00080032' + imgNum).textContent = readTagString(image, 'x00080032');
-            document.getElementById('x00080033' + imgNum).textContent = readTagString(image, 'x00080033');
-            document.getElementById('x00080050' + imgNum).textContent = readTagString(image, 'x00080050');
-            document.getElementById('x00080060' + imgNum).textContent = readTagString(image, 'x00080060');
-            document.getElementById('x00080070' + imgNum).textContent = readTagString(image, 'x00080070');
-            document.getElementById('x00080080' + imgNum).textContent = readTagString(image, 'x00080080');
-            document.getElementById('x00080081' + imgNum).textContent = readTagString(image, 'x00080081');
-            document.getElementById('x00080090' + imgNum).textContent = readTagString(image, 'x00080090');
-            document.getElementById('x00081010' + imgNum).textContent = readTagString(image, 'x00081010');
-            document.getElementById('x00081030' + imgNum).textContent = readTagString(image, 'x00081030');
-            document.getElementById('x0008103E' + imgNum).textContent = readTagString(image, 'x0008103E');
-            document.getElementById('x00081070' + imgNum).textContent = readTagString(image, 'x00081070');
-            document.getElementById('x00081090' + imgNum).textContent = readTagString(image, 'x00081090');
-            //BLOCO (0008,1140)
-            document.getElementById('x00081140' + imgNum).textContent = readTagStringID(image, 'x00081140');
-            document.getElementById('x00081150' + imgNum).textContent = readTagStringID(image, 'x00081150');
-            document.getElementById('x00081155' + imgNum).textContent = readTagStringID(image, 'x00081155');
-            //NORMAL
-            document.getElementById('x00082111' + imgNum).textContent = readTagString(image, 'x00082111');
-            //BLOCO (0008,9215)
-            document.getElementById('x00089215' + imgNum).textContent = readTagUint16(image, 'x00089215');
-            document.getElementById('x00080100' + imgNum).textContent = readTagString(image, 'x00080100');
-            document.getElementById('x00080102' + imgNum).textContent = readTagString(image, 'x00080102');
-            document.getElementById('x00080104' + imgNum).textContent = readTagString(image, 'x00080104');
-            //NORMAL
-            document.getElementById('x00100010' + imgNum).textContent = readTagString(image, 'x00100010');
-            document.getElementById('x00100020' + imgNum).textContent = readTagString(image, 'x00100020');
-            document.getElementById('x00100030' + imgNum).textContent = readTagString(image, 'x00100030') + ' [' + formatData(readTagString(image, 'x00100030')) + ']';
-            document.getElementById('x00100040' + imgNum).textContent = readTagString(image, 'x00100040');
-            document.getElementById('x00101010' + imgNum).textContent = readTagString(image, 'x00101010');
-            document.getElementById('x00180015' + imgNum).textContent = readTagString(image, 'x00180015');
-            document.getElementById('x00180050' + imgNum).textContent = readTagString(image, 'x00180050');
-            document.getElementById('x00180060' + imgNum).textContent = readTagString(image, 'x00180060');
-            document.getElementById('x00181000' + imgNum).textContent = readTagString(image, 'x00181000');
-            document.getElementById('x00181020' + imgNum).textContent = readTagString(image, 'x00181020');
-            document.getElementById('x00181030' + imgNum).textContent = readTagString(image, 'x00181030');
-            document.getElementById('x00181110' + imgNum).textContent = readTagString(image, 'x00181110');
-            document.getElementById('x00181111' + imgNum).textContent = readTagString(image, 'x00181111');
-            document.getElementById('x00181120' + imgNum).textContent = readTagString(image, 'x00181120');
-            document.getElementById('x00181130' + imgNum).textContent = readTagString(image, 'x00181130');
-            document.getElementById('x00181140' + imgNum).textContent = readTagString(image, 'x00181140');
-            document.getElementById('x00181160' + imgNum).textContent = readTagString(image, 'x00181160');
-            document.getElementById('x00181170' + imgNum).textContent = readTagString(image, 'x00181170');
-            document.getElementById('x00181190' + imgNum).textContent = readTagString(image, 'x00181190');
-            document.getElementById('x00181200' + imgNum).textContent = readTagString(image, 'x00181200') + ' [' + formatData(readTagString(image, 'x00181200')) + ']';
-            document.getElementById('x00181201' + imgNum).textContent = readTagString(image, 'x00181201');
-            document.getElementById('x00181210' + imgNum).textContent = readTagString(image, 'x00181210');
-            document.getElementById('x00185100' + imgNum).textContent = readTagString(image, 'x00185100');
-            document.getElementById('x0020000D' + imgNum).textContent = readTagString(image, 'x0020000D');
-            document.getElementById('x0020000E' + imgNum).textContent = readTagString(image, 'x0020000E');
-            document.getElementById('x00200010' + imgNum).textContent = readTagString(image, 'x00200010');
-            document.getElementById('x00200011' + imgNum).textContent = readTagString(image, 'x00200011');
-            document.getElementById('x00200012' + imgNum).textContent = readTagString(image, 'x00200012');
-            document.getElementById('x00200013' + imgNum).textContent = readTagString(image, 'x00200013');
-            document.getElementById('x00200032' + imgNum).textContent = readTagString(image, 'x00200032');
-            document.getElementById('x00200037' + imgNum).textContent = readTagString(image, 'x00200037');
-            document.getElementById('x00200052' + imgNum).textContent = readTagString(image, 'x00200052');
-            document.getElementById('x00201040' + imgNum).textContent = readTagString(image, 'x00201040');
-            document.getElementById('x00204000' + imgNum).textContent = readTagString(image, 'x00204000');
-            document.getElementById('x00280002' + imgNum).textContent = readTagUint16(image, 'x00280002');
-            document.getElementById('x00280004' + imgNum).textContent = readTagString(image, 'x00280004');
-            document.getElementById('x00280006' + imgNum).textContent = readTagUint16(image, 'x00280006');
-            document.getElementById('x00280008' + imgNum).textContent = readTagString(image, 'x00280008');
-            document.getElementById('x00280010' + imgNum).textContent = readTagUint16(image, 'x00280010');
-            document.getElementById('x00280011' + imgNum).textContent = readTagUint16(image, 'x00280011');
-            document.getElementById('x00280030' + imgNum).textContent = readTagString(image, 'x00280030');
-            document.getElementById('x00280100' + imgNum).textContent = readTagUint16(image, 'x00280100');
-            document.getElementById('x00280101' + imgNum).textContent = readTagUint16(image, 'x00280101');
-            document.getElementById('x00280102' + imgNum).textContent = readTagUint16(image, 'x00280102');
-            document.getElementById('x00280103' + imgNum).textContent = readTagUint16(image, 'x00280103');
-            document.getElementById('x00281050' + imgNum).textContent = readTagString(image, 'x00281050');
-            document.getElementById('x00281051' + imgNum).textContent = readTagString(image, 'x00281051');
-            document.getElementById('x00281052' + imgNum).textContent = readTagString(image, 'x00281052');
-            document.getElementById('x00281053' + imgNum).textContent = readTagString(image, 'x00281053');
-            document.getElementById('x00281054' + imgNum).textContent = readTagString(image, 'x00281054');
-            document.getElementById('x00281055' + imgNum).textContent = readTagString(image, 'x00281055');
-            document.getElementById('x00282110' + imgNum).textContent = readTagString(image, 'x00282110');
-        }, function (err) {
-            alert(err);
+        cornerstoneWADOImageLoader.configure({
+            beforeSend: function (xhr) {
+                // Add custom headers here (e.g. auth tokens)
+                //xhr.setRequestHeader('x-auth-token', 'my auth token');
+            },
+            useWebWorkers: true,
         });
 
+        let loaded = false;
+
+        function loadAndViewImage(imageId, flagField) {
+            var element;
+            var imgNum;
+            if (flagField) {
+                imgNum = 1;
+                element = document.getElementById('dicomImage1');
+            } else {
+                imgNum = 2;
+                element = document.getElementById('dicomImage2');
+            }
+            //const element = document.getElementById('dicomImage');
+            cornerstone.loadImage(imageId).then(function (image) {
+                console.log(image);
+                const viewport = cornerstone.getDefaultViewportForImage(element, image);
+                cornerstone.displayImage(element, image, viewport);
+                if (loaded === false) {
+                    loaded = true;
+                }
+
+                function formatData(data) {
+                    return data.substring(0, 4) + "-" + data.substring(4, 6) + "-" + data.substring(6);
+                }
+
+                function readTagString(image, tag) {
+                    let tagValue = image.data.string(tag);
+                    if (tagValue === undefined) {
+                        return '(VAZIO)';
+                    } else {
+                        return tagValue;
+                    }
+                }
+
+                function readTagStringID(image, tag) {
+                    let tagValue = image.data.string(tag);
+                    if (tagValue === undefined) {
+                        return '(VAZIO)';
+                    } else {
+                        return tagValue + ' [' + uids[tagValue] + ']';
+                    }
+                }
+
+                function readTagUint16(image, tag) {
+                    let tagValue = image.data.uint16(tag);
+                    if (tagValue === undefined) {
+                        return '(VAZIO)';
+                    } else {
+                        return tagValue;
+                    }
+                }
+
+                //PADRAO
+                document.getElementById('basicOffsetTable' + imgNum).textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.basicOffsetTable ? image.data.elements.x7fe00010.basicOffsetTable.length : '';
+                document.getElementById('fragments' + imgNum).textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.fragments ? image.data.elements.x7fe00010.fragments.length : '';
+                document.getElementById('minStoredPixelValue' + imgNum).textContent = image.minPixelValue;
+                document.getElementById('maxStoredPixelValue' + imgNum).textContent = image.maxPixelValue;
+                //NORMAL
+                document.getElementById('x00020000' + imgNum).textContent = readTagUint16(image, 'x00020000');
+                document.getElementById('x00020001' + imgNum).textContent = readTagUint16(image, 'x00020001');
+                document.getElementById('x00020002' + imgNum).textContent = readTagStringID(image, 'x00020002');
+                document.getElementById('x00020003' + imgNum).textContent = readTagString(image, 'x00020003');
+                document.getElementById('x00020010' + imgNum).textContent = readTagStringID(image, 'x00020010');
+                document.getElementById('x00020012' + imgNum).textContent = readTagString(image, 'x00020012');
+                document.getElementById('x00020013' + imgNum).textContent = readTagString(image, 'x00020013');
+                document.getElementById('x00020016' + imgNum).textContent = readTagString(image, 'x00020016');
+                document.getElementById('x00080005' + imgNum).textContent = readTagString(image, 'x00080005');
+                document.getElementById('x00080008' + imgNum).textContent = readTagString(image, 'x00080008');
+                document.getElementById('x00080016' + imgNum).textContent = readTagStringID(image, 'x00080016');
+                document.getElementById('x00080018' + imgNum).textContent = readTagString(image, 'x00080018');
+                document.getElementById('x00080020' + imgNum).textContent = readTagString(image, 'x00080020') + ' [' + formatData(readTagString(image, 'x00080020')) + ']';
+                document.getElementById('x00080021' + imgNum).textContent = readTagString(image, 'x00080021') + ' [' + formatData(readTagString(image, 'x00080021')) + ']';
+                document.getElementById('x00080022' + imgNum).textContent = readTagString(image, 'x00080022') + ' [' + formatData(readTagString(image, 'x00080022')) + ']';
+                document.getElementById('x00080023' + imgNum).textContent = readTagString(image, 'x00080023') + ' [' + formatData(readTagString(image, 'x00080023')) + ']';
+                document.getElementById('x00080030' + imgNum).textContent = readTagString(image, 'x00080030');
+                document.getElementById('x00080031' + imgNum).textContent = readTagString(image, 'x00080031');
+                document.getElementById('x00080032' + imgNum).textContent = readTagString(image, 'x00080032');
+                document.getElementById('x00080033' + imgNum).textContent = readTagString(image, 'x00080033');
+                document.getElementById('x00080050' + imgNum).textContent = readTagString(image, 'x00080050');
+                document.getElementById('x00080060' + imgNum).textContent = readTagString(image, 'x00080060');
+                document.getElementById('x00080070' + imgNum).textContent = readTagString(image, 'x00080070');
+                document.getElementById('x00080080' + imgNum).textContent = readTagString(image, 'x00080080');
+                document.getElementById('x00080081' + imgNum).textContent = readTagString(image, 'x00080081');
+                document.getElementById('x00080090' + imgNum).textContent = readTagString(image, 'x00080090');
+                document.getElementById('x00081010' + imgNum).textContent = readTagString(image, 'x00081010');
+                document.getElementById('x00081030' + imgNum).textContent = readTagString(image, 'x00081030');
+                document.getElementById('x0008103E' + imgNum).textContent = readTagString(image, 'x0008103E');
+                document.getElementById('x00081070' + imgNum).textContent = readTagString(image, 'x00081070');
+                document.getElementById('x00081090' + imgNum).textContent = readTagString(image, 'x00081090');
+                //BLOCO (0008,1140)
+                document.getElementById('x00081140' + imgNum).textContent = readTagStringID(image, 'x00081140');
+                document.getElementById('x00081150' + imgNum).textContent = readTagStringID(image, 'x00081150');
+                document.getElementById('x00081155' + imgNum).textContent = readTagStringID(image, 'x00081155');
+                //NORMAL
+                document.getElementById('x00082111' + imgNum).textContent = readTagString(image, 'x00082111');
+                //BLOCO (0008,9215)
+                document.getElementById('x00089215' + imgNum).textContent = readTagUint16(image, 'x00089215');
+                document.getElementById('x00080100' + imgNum).textContent = readTagString(image, 'x00080100');
+                document.getElementById('x00080102' + imgNum).textContent = readTagString(image, 'x00080102');
+                document.getElementById('x00080104' + imgNum).textContent = readTagString(image, 'x00080104');
+                //NORMAL
+                document.getElementById('x00100010' + imgNum).textContent = readTagString(image, 'x00100010');
+                document.getElementById('x00100020' + imgNum).textContent = readTagString(image, 'x00100020');
+                document.getElementById('x00100030' + imgNum).textContent = readTagString(image, 'x00100030') + ' [' + formatData(readTagString(image, 'x00100030')) + ']';
+                document.getElementById('x00100040' + imgNum).textContent = readTagString(image, 'x00100040');
+                document.getElementById('x00101010' + imgNum).textContent = readTagString(image, 'x00101010');
+                document.getElementById('x00180015' + imgNum).textContent = readTagString(image, 'x00180015');
+                document.getElementById('x00180050' + imgNum).textContent = readTagString(image, 'x00180050');
+                document.getElementById('x00180060' + imgNum).textContent = readTagString(image, 'x00180060');
+                document.getElementById('x00181000' + imgNum).textContent = readTagString(image, 'x00181000');
+                document.getElementById('x00181020' + imgNum).textContent = readTagString(image, 'x00181020');
+                document.getElementById('x00181030' + imgNum).textContent = readTagString(image, 'x00181030');
+                document.getElementById('x00181110' + imgNum).textContent = readTagString(image, 'x00181110');
+                document.getElementById('x00181111' + imgNum).textContent = readTagString(image, 'x00181111');
+                document.getElementById('x00181120' + imgNum).textContent = readTagString(image, 'x00181120');
+                document.getElementById('x00181130' + imgNum).textContent = readTagString(image, 'x00181130');
+                document.getElementById('x00181140' + imgNum).textContent = readTagString(image, 'x00181140');
+                document.getElementById('x00181160' + imgNum).textContent = readTagString(image, 'x00181160');
+                document.getElementById('x00181170' + imgNum).textContent = readTagString(image, 'x00181170');
+                document.getElementById('x00181190' + imgNum).textContent = readTagString(image, 'x00181190');
+                document.getElementById('x00181200' + imgNum).textContent = readTagString(image, 'x00181200') + ' [' + formatData(readTagString(image, 'x00181200')) + ']';
+                document.getElementById('x00181201' + imgNum).textContent = readTagString(image, 'x00181201');
+                document.getElementById('x00181210' + imgNum).textContent = readTagString(image, 'x00181210');
+                document.getElementById('x00185100' + imgNum).textContent = readTagString(image, 'x00185100');
+                document.getElementById('x0020000D' + imgNum).textContent = readTagString(image, 'x0020000D');
+                document.getElementById('x0020000E' + imgNum).textContent = readTagString(image, 'x0020000E');
+                document.getElementById('x00200010' + imgNum).textContent = readTagString(image, 'x00200010');
+                document.getElementById('x00200011' + imgNum).textContent = readTagString(image, 'x00200011');
+                document.getElementById('x00200012' + imgNum).textContent = readTagString(image, 'x00200012');
+                document.getElementById('x00200013' + imgNum).textContent = readTagString(image, 'x00200013');
+                document.getElementById('x00200032' + imgNum).textContent = readTagString(image, 'x00200032');
+                document.getElementById('x00200037' + imgNum).textContent = readTagString(image, 'x00200037');
+                document.getElementById('x00200052' + imgNum).textContent = readTagString(image, 'x00200052');
+                document.getElementById('x00201040' + imgNum).textContent = readTagString(image, 'x00201040');
+                document.getElementById('x00204000' + imgNum).textContent = readTagString(image, 'x00204000');
+                document.getElementById('x00280002' + imgNum).textContent = readTagUint16(image, 'x00280002');
+                document.getElementById('x00280004' + imgNum).textContent = readTagString(image, 'x00280004');
+                document.getElementById('x00280006' + imgNum).textContent = readTagUint16(image, 'x00280006');
+                document.getElementById('x00280008' + imgNum).textContent = readTagString(image, 'x00280008');
+                document.getElementById('x00280010' + imgNum).textContent = readTagUint16(image, 'x00280010');
+                document.getElementById('x00280011' + imgNum).textContent = readTagUint16(image, 'x00280011');
+                document.getElementById('x00280030' + imgNum).textContent = readTagString(image, 'x00280030');
+                document.getElementById('x00280100' + imgNum).textContent = readTagUint16(image, 'x00280100');
+                document.getElementById('x00280101' + imgNum).textContent = readTagUint16(image, 'x00280101');
+                document.getElementById('x00280102' + imgNum).textContent = readTagUint16(image, 'x00280102');
+                document.getElementById('x00280103' + imgNum).textContent = readTagUint16(image, 'x00280103');
+                document.getElementById('x00281050' + imgNum).textContent = readTagString(image, 'x00281050');
+                document.getElementById('x00281051' + imgNum).textContent = readTagString(image, 'x00281051');
+                document.getElementById('x00281052' + imgNum).textContent = readTagString(image, 'x00281052');
+                document.getElementById('x00281053' + imgNum).textContent = readTagString(image, 'x00281053');
+                document.getElementById('x00281054' + imgNum).textContent = readTagString(image, 'x00281054');
+                document.getElementById('x00281055' + imgNum).textContent = readTagString(image, 'x00281055');
+                document.getElementById('x00282110' + imgNum).textContent = readTagString(image, 'x00282110');
+            }, function (err) {
+                alert(err);
+            });
+        }
+
+        const element1 = document.getElementById('dicomImage1');
+        cornerstone.enable(element1);
+
+        const element2 = document.getElementById('dicomImage2');
+        cornerstone.enable(element2);
+
         function logArrayElements(element, index, array) {
-            setTimeout(1000);
             var valueImg1 = document.getElementById(element + '1').textContent;
             var valueImg2 = document.getElementById(element + '2').textContent;
 
-            console.log(valueImg1);
-            console.log(valueImg2);
+            if (valueImg1 !== valueImg2) {
+                let elem = document.getElementById(element);
+                elem.style.backgroundColor = '#ff4343';
+            }
         }
 
         function readTagsAndCompare() {
+            $('#dataTable').DataTable().columns.adjust();
+
             var arrayTags = ['basicOffsetTable', 'fragments', 'minStoredPixelValue', 'maxStoredPixelValue', 'x00020000', 'x00020001', 'x00020002', 'x00020003', 'x00020010',
                 'x00020012', 'x00020013', 'x00020016', 'x00080005', 'x00080008', 'x00080016', 'x00080018', 'x00080020', 'x00080021', 'x00080022', 'x00080023', 'x00080030', 'x00080031',
                 'x00080032', 'x00080033', 'x00080050', 'x00080060', 'x00080070', 'x00080080', 'x00080081', 'x00080090', 'x00081010', 'x00081030', 'x0008103E', 'x00081070', 'x00081090',
@@ -776,97 +836,43 @@
             arrayTags.forEach(logArrayElements);
         }
 
-        /*if (!flagField) {
-            readTagsAndCompare();
-        }*/
-    }
+        //Select File 1
+        document.getElementById('selectFile1').addEventListener('change', function (e) {
+            const file1 = e.target.files[0];
+            const imageId1 = cornerstoneWADOImageLoader.wadouri.fileManager.add(file1);
+            loadAndViewImage(imageId1, true);
 
-    const element1 = document.getElementById('dicomImage1');
-    cornerstone.enable(element1);
+            var fileName1 = document.getElementById("selectFile1").files[0].name;
+            document.getElementById("dicomName1").innerHTML = fileName1;
 
-    const element2 = document.getElementById('dicomImage2');
-    cornerstone.enable(element2);
+            if (document.getElementById('selectFile2').value !== '') {
+                setTimeout(function () { readTagsAndCompare() }, 500);
+            }
+        });
 
-    //Select File 1
-    document.getElementById('selectFile1').addEventListener('change', function (e) {
-        // Add the file to the cornerstoneFileImageLoader and get unique
-        // number for that file
-        const file1 = e.target.files[0];
-        const imageId1 = cornerstoneWADOImageLoader.wadouri.fileManager.add(file1);
-        loadAndViewImage(imageId1, true);
-    });
+        //Select File 2
+        document.getElementById('selectFile2').addEventListener('change', function (e) {
+            const file2 = e.target.files[0];
+            const imageId2 = cornerstoneWADOImageLoader.wadouri.fileManager.add(file2);
+            loadAndViewImage(imageId2, false);
 
-    function logArrayElements(element, index, array) {
-        var valueImg1 = document.getElementById(element + '1').textContent;
-        var valueImg2 = document.getElementById(element + '2').textContent;
+            var fileName2 = document.getElementById("selectFile2").files[0].name;
+            document.getElementById("dicomName2").innerHTML = fileName2;
 
-        if (valueImg1 !== valueImg2) {
-            let elem = document.getElementById(element);
-            elem.style.backgroundColor = '#ff4343';
+            if (document.getElementById('selectFile1').value !== '') {
+                setTimeout(function () { readTagsAndCompare() }, 500);
+            }
+        });
+    </script>
+    <style>
+        .strip1 {
+            background-color: #F9F9F9;
         }
-    }
 
-    function readTagsAndCompare() {
-        var arrayTags = ['basicOffsetTable', 'fragments', 'minStoredPixelValue', 'maxStoredPixelValue', 'x00020000', 'x00020001', 'x00020002', 'x00020003', 'x00020010',
-            'x00020012', 'x00020013', 'x00020016', 'x00080005', 'x00080008', 'x00080016', 'x00080018', 'x00080020', 'x00080021', 'x00080022', 'x00080023', 'x00080030', 'x00080031',
-            'x00080032', 'x00080033', 'x00080050', 'x00080060', 'x00080070', 'x00080080', 'x00080081', 'x00080090', 'x00081010', 'x00081030', 'x0008103E', 'x00081070', 'x00081090',
-            'x00081140', 'x00081150', 'x00081155', 'x00082111', 'x00089215', 'x00080100', 'x00080102', 'x00080104', 'x00100010', 'x00100020', 'x00100030', 'x00100040', 'x00101010',
-            'x00180015', 'x00180050', 'x00180060', 'x00181000', 'x00181020', 'x00181030', 'x00181110', 'x00181111', 'x00181120', 'x00181130', 'x00181140', 'x00181160', 'x00181170',
-            'x00181190', 'x00181200', 'x00181201', 'x00181210', 'x00185100', 'x0020000D', 'x0020000E', 'x00200010', 'x00200011', 'x00200012', 'x00200013', 'x00200032', 'x00200037',
-            'x00200052', 'x00201040', 'x00204000', 'x00280002', 'x00280004', 'x00280006', 'x00280008', 'x00280010', 'x00280011', 'x00280030', 'x00280100', 'x00280101', 'x00280102',
-            'x00280103', 'x00281050', 'x00281051', 'x00281052', 'x00281053', 'x00281054', 'x00281055', 'x00282110'];
-
-        arrayTags.forEach(logArrayElements);
-    }
-
-    //Select File 2
-    document.getElementById('selectFile2').addEventListener('change', function (e) {
-        // Add the file to the cornerstoneFileImageLoader and get unique
-        // number for that file
-        const file2 = e.target.files[0];
-        const imageId2 = cornerstoneWADOImageLoader.wadouri.fileManager.add(file2);
-        loadAndViewImage(imageId2, false);
-
-        setTimeout(function(){readTagsAndCompare()}, 500);
-        //readTagsAndCompare();
-    });
-</script>
-<style>
-    .row {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-
-    .container {
-        width: 100% !important;
-    }
-
-    .page-header {
-        margin: 20px 0 20px !important;
-        border-bottom: 1px solid #000000 !important;
-    }
-
-    hr {
-        border-top: 1px solid #000 !important;
-    }
-
-    .col-md-9 {
-        border-left: 1px solid;
-    }
-
-    #areaTable::-webkit-scrollbar-track {
-        border: 1px solid black;
-        background-color: #F5F5F5;
-    }
-
-    #areaTable::-webkit-scrollbar {
-        width: 6px;
-        background-color: #F5F5F5;
-    }
-
-    #areaTable::-webkit-scrollbar-thumb {
-        background-color: #000000;
-    }
-</style>
+        .strip2 {
+            background-color: #FFFFFF;
+        }
+    </style>
+</body>
 
 </html>
