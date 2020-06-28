@@ -16,7 +16,7 @@ A functional example of the application can be seen [here](https://rawcdn.githac
 
 ## Versioning
 
-Currently, the system is at version 1.1.0. For the versions available, see the [tags on this repository](https://github.com/GabrielFDuarte/DICOM-Explorer/tags). 
+Currently, the system is at version 1.1.1. For the versions available, see the [tags on this repository](https://github.com/GabrielFDuarte/DICOM-Explorer/tags). 
 
 ## Authors
 
