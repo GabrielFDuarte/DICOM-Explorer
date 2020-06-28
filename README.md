@@ -8,11 +8,12 @@ I hope it is a way to make it easier for developers, students and anyone who nee
 
 ## Examples
 
-A functional example of the application can be seen [here](https://rawcdn.githack.com/GabrielFDuarte/DICOM-Explorer/a178219d2fcca1b0f6e96f57af5b4172db30414d/index.html).
+A functional example of the application can be seen [here](https://rawcdn.githack.com/GabrielFDuarte/DICOM-Explorer/5ddece71ddd57781cf2acd0136d738945eec4ed8/index.html).
 
 ## Built With
 
 * [cornerstone.js](https://github.com/cornerstonejs) - Library to display interactive medical images
+* [Bootstrap](https://getbootstrap.com/)
 
 ## Versioning
 
